@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react"
 import { withRouter } from "react-router"
 import app from "../FirebaseInfo"
 import { Link } from "react-router-dom"
+import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
 
 function Registration({ history }) {
     const [error, seterror] = useState()
@@ -12,6 +13,7 @@ function Registration({ history }) {
             await app
                 .auth()
                 .createUserWithEmailAndPassword(email.value, password.value)
+            localStorage.setItem('loggedEmail', email.value);
             history.push("/home")
         } catch (error) {
             seterror(error)
@@ -19,26 +21,46 @@ function Registration({ history }) {
     }, [history])
 
     return (
-        <div>
-            <h1>Registration</h1>
-            <form onSubmit={handleRegistration}>
-                <div>
-                    <label> Email </label>
-                    <input name="email" type="email" placeholder="Email" />
-                </div>
-                <div>
-                    <label> Password </label>
-                    <input name="password" type="password" placeholder="Password" />
-                </div>
-                <button type="submit">Sign Up</button>
-            </form>
-            {
-                error ? 
-                <p style={{color: 'red', fontSize: '20px'}}>{error.message}</p> : 
-                ''
-            }
-            <p>Already have an account? Go to <Link to="/login">Login</Link></p>
-        </div>
+        <Container>
+            <Row>
+                <Col sm="12" md={{ size: 6, offset: 3 }}>
+                    <h1>Registration</h1>
+                    <Form onSubmit={handleRegistration} className="mt-4">
+                        <Form.Group as={Row} controlId="formHorizontalEmail">
+                            <Form.Label column sm={2}>
+                                Email
+                            </Form.Label>
+                            <Col sm={10}>
+                                <Form.Control type="email" name="email" placeholder="Email" />
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} controlId="formHorizontalPassword">
+                            <Form.Label column sm={2}>
+                                Password
+                            </Form.Label>
+                            <Col sm={10}>
+                                <Form.Control type="password" name="password" placeholder="Password" />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row}>
+                            <Col sm={{ span: 10, offset: 2 }}>
+                                <Button type="submit">Créer un compte</Button>
+                            </Col>
+                        </Form.Group>
+                        {
+                            error ?
+                                <Alert variant="danger">
+                                    <Alert.Heading>Error</Alert.Heading>
+                                    <p>{error.message}</p>
+                                </Alert> :
+                                ''
+                        }
+                        <p>Already have an account? Go to <Link to="/login">Login</Link></p>
+                    </Form>
+                </Col>
+            </Row>
+        </Container>
     )
 }
 
